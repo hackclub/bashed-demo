@@ -48,6 +48,11 @@
 }
 
 @layer base {
+  /* Dark, so the browser's own scrollbars and controls are too */
+  :root {
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-frame text-white font-sans;
   }
@@ -116,7 +121,11 @@
 }
 
 /* The demo terminal (xterm.js) is see-through, on whatever its page puts behind it, but its
-   stylesheet paints its scrolling area black */
+   stylesheet paints its scrolling area black. That area always scrolls (for the terminal's
+   scrollback), so its scrollbar is a thin, faint one, rather than the browser's default
+   light one. */
 .xterm .xterm-viewport {
   background-color: transparent !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.2) transparent;
 }
