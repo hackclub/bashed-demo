@@ -1,0 +1,41 @@
+{
+  "name": "bashed-demo",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --port 3001",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "disk:build": "./scripts/build-disk.sh",
+    "db:up": "docker compose up -d --wait postgres",
+    "db:down": "docker compose down",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "bashed": "node scripts/bashed-request.mjs"
+  },
+  "dependencies": {
+    "@leaningtech/cheerpx": "1.4.0",
+    "@nuxt/fonts": "1.2.0",
+    "@nuxt/icon": "2.6.3",
+    "@tailwindcss/vite": "^4.3.5",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "drizzle-orm": "^0.45.4",
+    "nuxt": "^4.6.4",
+    "postgres": "^3.4.9",
+    "tailwindcss": "^4.3.5",
+    "vue": "^3.5.46",
+    "vue-router": "^5.5.1"
+  },
+  "devDependencies": {
+    "@iconify-json/solar": "1.2.17",
+    "@types/node": "^24.19.2",
+    "drizzle-kit": "^0.31.11",
+    "prettier": "^3.10.1",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.14"
+  }
+}

@@ -1,0 +1,52 @@
+#!/bin/bash
+# Starts a demo inside the virtual machine. The page writes the project's repository, as it
+# was at the demo's commit, to /data/repo.tar.gz; this unpacks it into ~/<name> (like a
+# `git clone` would), runs the entry file from there, then leaves a shell in the repository
+# so it can be looked around or run again.
+#
+#   bashed-demo <name> <entry>
+#
+# <entry> is the file's path within the repository, e.g. main.fish or scripts/run.sh.
+
+name=$1
+entry=$2
+repo="$HOME/$name"
+
+dim=$'\e[2m'
+bold=$'\e[1m'
+reset=$'\e[0m'
+
+if [ ! -d "$repo" ]; then
+	mkdir -p "$repo" && tar -xzf /data/repo.tar.gz -C "$repo" || {
+		echo "Couldn't unpack the repository."
+		exec bash --login
+	}
+fi
+cd "$repo" || exit 1
+
+# Run as its author would: through its shebang if it has one (made executable first, since
+# repositories often lose the bit), otherwise with the shell its extension names
+run() {
+	if [ "$(head -c 2 -- "$entry")" = "#!" ]; then
+		chmod u+x -- "$entry"
+		"./$entry"
+	else
+		case "$entry" in
+		*.fish) fish -- "$entry" ;;
+		*) bash -- "$entry" ;;
+		esac
+	fi
+}
+
+run
+code=$?
+
+# Put the terminal back in case the script left it in a mode of its own
+stty sane 2>/dev/null
+printf '%s' $'\e[?25h\e[?1049l\e[0m'
+
+echo
+echo "${dim}${entry} finished (exit code ${code}).${reset}"
+echo "${dim}You're in ${bold}~/${name}${reset}${dim}. Run it again with ${bold}./${entry}${reset}"
+echo
+exec bash --login
