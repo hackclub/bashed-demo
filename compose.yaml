@@ -35,6 +35,7 @@ services:
       NUXT_DATABASE_URL: postgresql://${POSTGRES_USER:-bashed_demo}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-bashed_demo}
       NUXT_BASHED_SECRET: ${BASHED_SECRET:?set BASHED_SECRET in .env}
       NUXT_PUBLIC_BASHED_URL: ${BASHED_URL:-https://bashed.hackclub.com}
+      NUXT_GITHUB_TOKENS: ${GITHUB_TOKENS:-}
 
 volumes:
   postgres-data:

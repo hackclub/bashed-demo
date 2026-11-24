@@ -23,6 +23,11 @@ export default defineNuxtConfig({
     // The virtual machine's disk, built with `pnpm disk:build` (the Docker image has its own,
     // see the Dockerfile); overridable with NUXT_DISK_PATH
     diskPath: process.env.DISK_PATH ?? ".data/disk/disk.ext2",
+    // Optional GitHub tokens, separated by commas, for cloning from GitHub without running
+    // into its limit on clones without a login (see server/utils/repository.ts). Demos must
+    // only come from public repositories, so give fine-grained tokens with public
+    // repositories only and no permissions. Overridable with NUXT_GITHUB_TOKENS.
+    githubTokens: process.env.GITHUB_TOKENS ?? "",
     public: {
       // Linked from the header; overridable with NUXT_PUBLIC_BASHED_URL
       bashedUrl: process.env.BASHED_URL ?? "https://bashed.hackclub.com",

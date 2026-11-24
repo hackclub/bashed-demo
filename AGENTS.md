@@ -38,7 +38,10 @@ too, and Bashed's doesn't. So framed demos isolate themselves with `Document-Iso
 of its own instead. Only Bashed can frame them (`frame-ancestors`, from `BASHED_URL`).
 
 The site's git never asks for anything: no prompts and no askpass program, and none of the
-machine's own git config. A repository that needs a login just fails.
+machine's own git config. A repository that needs a login just fails. Clones from GitHub log
+in with a token from `NUXT_GITHUB_TOKENS` (separated by commas, taken in turn) if there are
+any, falling back to none if GitHub refuses them; it's passed in git's environment, so it's
+never in the command line or the clone's `.git/config`.
 
 ## API
 
@@ -112,6 +115,9 @@ Setting it up, once:
    - `NUXT_BASHED_SECRET`: the secret Bashed signs its requests with (`openssl rand -hex 32`).
    - `NUXT_PUBLIC_BASHED_URL`: `https://bashed.hackclub.com`, which links back to Bashed and
      is the only site allowed to frame previews.
+   - `NUXT_GITHUB_TOKENS` (optional): GitHub tokens, separated by commas, for cloning from
+     GitHub without its limit on clones without a login. Use fine-grained tokens with
+     "Public repositories" access, so private repositories can't be demoed.
 4. **Point Bashed at it:** `NUXT_DEMOS_URL=https://demo.bashed.hackclub.com` and the same
    secret as `NUXT_DEMOS_SECRET`.
 

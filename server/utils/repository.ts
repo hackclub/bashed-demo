@@ -105,6 +105,40 @@ const GIT_ENV = {
   GIT_LFS_SKIP_SMUDGE: "1",
 };
 
+// GitHub tokens (NUXT_GITHUB_TOKENS, separated by commas), so clones from GitHub don't run
+// into its limit for ones without a login. Each clone starts from the next in turn. A token
+// GitHub refuses while going without one works (it's expired, or its account's used up its
+// limit) is left out for a while.
+const REFUSED_TOKEN_MS = 15 * 60_000;
+const refusedTokens = new Map<string, number>();
+let tokenTurn = 0;
+function githubTokens() {
+  const now = Date.now();
+  const tokens = [
+    ...new Set(
+      String(useRuntimeConfig().githubTokens ?? "")
+        .split(/[\s,]+/)
+        .filter(Boolean),
+    ),
+  ].filter((token) => (refusedTokens.get(token) ?? 0) <= now);
+  const start = tokenTurn++ % Math.max(tokens.length, 1);
+  return [...tokens.slice(start), ...tokens.slice(0, start)];
+}
+
+// Git's environment, logging in to GitHub with the token if there is one. It's given in
+// the environment, so it isn't in the command line (which anyone on the machine can see)
+// or the clone's .git/config (which goes to visitors), and only to github.com.
+function gitEnv(token: string | null) {
+  if (!token) return GIT_ENV;
+  const login = Buffer.from(`x-access-token:${token}`).toString("base64");
+  return {
+    ...GIT_ENV,
+    GIT_CONFIG_COUNT: "1",
+    GIT_CONFIG_KEY_0: "http.https://github.com/.extraHeader",
+    GIT_CONFIG_VALUE_0: `Authorization: Basic ${login}`,
+  };
+}
+
 // Clones the repository at a commit (its latest if that's null), runs `use` on the clone,
 // then deletes it. Only that commit's fetched, but it's a real clone with its .git, so
 // scripts can use git too. Submodules and Git LFS files aren't fetched.
@@ -117,12 +151,13 @@ async function withClone<T>(
     const dir = await mkdtemp(join(tmpdir(), "bashed-demo-"));
     const clone = join(dir, "repo");
     const url = `https://${repository.host}/${repository.path}.git`;
+    let token: string | null = null;
     const git = (args: string[]) =>
       run("git", ["-c", "init.defaultBranch=main", ...args], {
         cwd: dir,
         timeout: GIT_TIMEOUT_MS,
         maxBuffer: 64 * 1024 * 1024,
-        env: GIT_ENV,
+        env: gitEnv(token),
       });
     const unreachable = () =>
       createError({
@@ -135,14 +170,30 @@ async function withClone<T>(
       await git(["-C", clone, "remote", "add", "origin", url]);
       const at = (args: string[]) => git(["-C", clone, ...args]);
 
-      // The latest is what the repository's HEAD (its default branch) points at
-      if (!commit) {
-        const { stdout } = await at(["ls-remote", "origin", "HEAD"]).catch(
-          () => {
-            throw unreachable();
-          },
+      // Whether it can be reached, and what its HEAD (its default branch) points at. On
+      // GitHub, with the first token that's let in, or else without one.
+      const tokens = repository.host == "github.com" ? githubTokens() : [];
+      let head: string | null = null;
+      for (const login of [...tokens, null]) {
+        token = login;
+        head = await at(["ls-remote", "origin", "HEAD"]).then(
+          ({ stdout }) => stdout,
+          () => null,
         );
-        commit = /^([0-9a-f]{40})\s/.exec(stdout)?.[1] ?? null;
+        if (head !== null) break;
+      }
+      if (head === null) throw unreachable();
+      if (token === null && tokens.length) {
+        console.error(
+          `GitHub refused ${tokens.length == 1 ? "a token" : `${tokens.length} tokens`} (ending ${tokens.map((t) => t.slice(-4)).join(", ")}) but let ${repository.path} be cloned without one; check NUXT_GITHUB_TOKENS`,
+        );
+        for (const refused of tokens)
+          refusedTokens.set(refused, Date.now() + REFUSED_TOKEN_MS);
+      }
+
+      // The latest is what HEAD points at
+      if (!commit) {
+        commit = /^([0-9a-f]{40})\s/.exec(head)?.[1] ?? null;
         if (!commit)
           throw createError({
             statusCode: 422,
