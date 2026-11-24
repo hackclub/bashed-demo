@@ -4,7 +4,7 @@ import type { DemoKind, RepoHost } from "../utils/repo-hosts";
 export interface Demo {
   // A UUIDv6
   id: string;
-  // A preview tried from Bashed ("framed", for two minutes), or a shipped project's
+  // A preview tried from Bashed ("framed", for five minutes), or a shipped project's
   kind: DemoKind;
   // The project's ID on Bashed
   project: number | null;

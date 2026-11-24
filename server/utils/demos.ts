@@ -4,7 +4,7 @@ import { isUuid6 } from "./uuid6";
 import type { DemoKind, RepoHost } from "#shared/utils/repo-hosts";
 
 // How long a framed demo (a preview tried from Bashed) lasts
-export const FRAMED_LIFETIME_MS = 2 * 60 * 1000;
+export const FRAMED_LIFETIME_MS = 5 * 60 * 1000;
 
 // The demo's ID from the route: a UUIDv6 (see uuid6)
 export function demoId(event: H3Event): string {

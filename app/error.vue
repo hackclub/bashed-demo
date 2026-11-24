@@ -28,7 +28,7 @@ const copy = computed(() =>
     : props.error.statusCode == 410
       ? {
           title: "this preview has ended",
-          text: "Previews last two minutes. You can try it again from your project on Bashed.",
+          text: "Previews last five minutes. You can try it again from your project on Bashed.",
         }
       : {
           title: "something broke",

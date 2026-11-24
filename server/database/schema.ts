@@ -16,7 +16,7 @@ const bytea = customType<{ data: Buffer }>({
 // A project's demo, made by Bashed (POST /api/demos), which decides what it runs: a file
 // in the project's repository, at a commit. Two kinds:
 // - "framed": a preview the project's owner tries from its page on Bashed, in a frame at
-//   /framed/<id>. It's gone two minutes after it's made (`expiresAt`).
+//   /framed/<id>. It's gone five minutes after it's made (`expiresAt`).
 // - "shipped": made when the project's shipped, for its reviewers and anyone else, at
 //   /<id>. It stays.
 export const demos = pgTable(

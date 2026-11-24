@@ -14,9 +14,9 @@ Lives at `demo.bashed.hackclub.com`: a shipped demo's page is `/<id>`, a preview
    site clones the repository at that commit (a shallow clone, `.git` included) and keeps it
    packed in its database, so the demo keeps running that version whatever's pushed later.
    Each demo has a UUIDv6, and is one of two kinds:
-   - **framed**: a two-minute preview the project's owner tries from its page on Bashed, in a
+   - **framed**: a five-minute preview the project's owner tries from its page on Bashed, in a
      frame, at `/framed/<id>`. In Bashed's frame it runs straight away (it's the owner's own
-     code); opened anywhere else it has the warning. When its two minutes are up the machine
+     code); opened anywhere else it has the warning. When its five minutes are up the machine
      stops, and the page is gone.
    - **shipped**: made when the project's shipped, for its reviewers and anyone else, at
      `/<id>`. It stays.

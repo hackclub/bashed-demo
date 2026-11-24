@@ -11,7 +11,7 @@
       @after-enter="switching = false"
       @enter-cancelled="switching = false"
     >
-      <!-- A preview's two minutes are up: its machine's gone -->
+      <!-- A preview's five minutes are up: its machine's gone -->
       <div
         v-if="ended"
         class="grid min-h-dvh place-items-center p-6 text-center"
@@ -19,8 +19,8 @@
         <div class="max-w-md space-y-4">
           <h1 class="text-3xl font-extrabold">this preview has ended</h1>
           <p class="text-white/70">
-            Previews last two minutes. You can try it again from your project on
-            Bashed.
+            Previews last five minutes. You can try it again from your project
+            on Bashed.
           </p>
           <UiButton
             v-if="!embedded"
@@ -157,7 +157,7 @@ onMounted(() => {
 onBeforeUnmount(() => machine.stop());
 
 // A preview runs without the warning: it's its author trying their own code (in Bashed's
-// frame, or in a tab of its own from there), at a link nobody else has, for two minutes
+// frame, or in a tab of its own from there), at a link nobody else has, for five minutes
 watch(machineState, (state) => {
   if (state == "ready" && (restarted.value || props.kind == "framed"))
     accepted.value = true;

@@ -25,7 +25,7 @@ import { DEMO_KINDS, type DemoKind } from "#shared/utils/repo-hosts";
 //     "project": 12                                 (optional: its ID on Bashed)
 //   }
 //
-// A framed demo is a two-minute preview, at /framed/<id>; a shipped one stays, at /<id>.
+// A framed demo is a five-minute preview, at /framed/<id>; a shipped one stays, at /<id>.
 // The repository's cloned at the commit and kept, so the demo keeps running that version
 // whatever's pushed later. Answers with the demo once it's ready (cloning takes a few
 // seconds), or an error saying what was wrong.
