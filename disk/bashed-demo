@@ -17,7 +17,11 @@ bold=$'\e[1m'
 reset=$'\e[0m'
 
 if [ ! -d "$repo" ]; then
-	mkdir -p "$repo" && tar -xzf /data/repo.tar.gz -C "$repo" || {
+	# Its files are dated now, by the machine's clock (-m), not when the server cloned it:
+	# the machine's clock can be behind (in Firefox it misses the time the computer was
+	# asleep since the browser started), which made tar warn about every file being from
+	# the future
+	mkdir -p "$repo" && tar -xzmf /data/repo.tar.gz -C "$repo" || {
 		echo "Couldn't unpack the repository."
 		exec bash --login
 	}
